@@ -145,6 +145,28 @@ Respond only with valid JSON.
   }
 }
 
+// Transcribe audio using Groq's Whisper model
+export async function transcribeAudio(audioFile: Buffer, filename: string): Promise<string> {
+  try {
+    // Create a File object from the buffer
+    const file = new File([audioFile], filename, { type: 'audio/webm' });
+    
+    const transcription = await groq.audio.transcriptions.create({
+      file: file,
+      model: "whisper-large-v3",
+      prompt: "This is an Excel interview session. The audio contains answers to Excel-related questions.",
+      response_format: "text",
+      language: "en",
+      temperature: 0.2
+    });
+
+    return transcription || "";
+  } catch (error) {
+    console.error("Groq transcription error:", error);
+    throw new Error("Failed to transcribe audio");
+  }
+}
+
 // Generate follow-up questions based on context
 export async function generateFollowUpQuestion(category: string, previousAnswer: string): Promise<string> {
   try {

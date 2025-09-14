@@ -2,9 +2,42 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertInterviewSchema } from "@shared/schema";
-import { evaluateAnswer } from "./services/groq";
+import { evaluateAnswer, transcribeAudio } from "./services/groq";
+import multer from 'multer';
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Configure multer for audio file uploads
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB limit
+    },
+    fileFilter: (req, file, cb) => {
+      // Allow audio files
+      if (file.mimetype.startsWith('audio/') || file.mimetype === 'application/octet-stream') {
+        cb(null, true);
+      } else {
+        cb(new Error('Only audio files are allowed'));
+      }
+    }
+  });
+
+  // Transcribe audio using Groq Whisper
+  app.post("/api/transcribe", upload.single('audio'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No audio file provided" });
+      }
+
+      const transcription = await transcribeAudio(req.file.buffer, req.file.originalname || 'audio.webm');
+      
+      res.json({ text: transcription });
+    } catch (error) {
+      console.error("Transcription error:", error);
+      res.status(500).json({ error: "Failed to transcribe audio" });
+    }
+  });
   
   // Start a new interview
   app.post("/api/interviews/start", async (req, res) => {

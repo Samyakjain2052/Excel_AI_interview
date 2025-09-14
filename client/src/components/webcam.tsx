@@ -63,7 +63,7 @@ export function Webcam({ isEnabled, onToggle }: WebcamProps) {
 
   if (hasPermission === false) {
     return (
-      <div className="fixed top-5 right-5 w-52 h-40 bg-card border border-border rounded-xl flex items-center justify-center z-50">
+      <div className="fixed bottom-5 right-5 w-52 h-40 bg-card border border-border rounded-xl flex items-center justify-center z-50">
         <div className="text-center text-sm">
           <CameraOff className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
           <p className="text-muted-foreground">Camera access denied</p>
@@ -81,7 +81,7 @@ export function Webcam({ isEnabled, onToggle }: WebcamProps) {
   }
 
   return (
-    <div className="fixed top-5 right-5 w-52 h-40 bg-card border border-border rounded-xl overflow-hidden z-50 shadow-lg">
+    <div className="fixed bottom-5 right-5 w-52 h-40 bg-card border border-border rounded-xl overflow-hidden z-50 shadow-lg">
       <div className="relative w-full h-full">
         {isEnabled && hasPermission ? (
           <video
