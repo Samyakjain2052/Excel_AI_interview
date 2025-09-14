@@ -160,7 +160,7 @@ export async function transcribeAudio(audioFile: Buffer, filename: string): Prom
       temperature: 0.2
     });
 
-    return transcription || "";
+    return transcription.text || "";
   } catch (error) {
     console.error("Groq transcription error:", error);
     throw new Error("Failed to transcribe audio");
