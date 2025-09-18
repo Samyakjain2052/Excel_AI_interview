@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, User, Shield, Briefcase, AlertCircle } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 interface LoginFormProps {
   onSuccess: (user: { id: string; username: string; role: string; email?: string }) => void;
@@ -33,13 +34,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
     try {
       const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await apiRequest("POST", endpoint, formData);
 
       const data = await response.json();
 

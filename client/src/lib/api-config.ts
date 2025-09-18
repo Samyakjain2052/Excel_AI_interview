@@ -12,14 +12,18 @@ export function getApiUrl(endpoint: string): string {
   // Remove leading slash if present
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
   
-  // In development, use localhost
+  // Use VITE_API_URL if set, otherwise fall back to localhost in dev or relative in prod
+  const baseUrl = import.meta.env.VITE_API_URL;
+  if (baseUrl) {
+    return `${baseUrl}/${cleanEndpoint}`;
+  }
+  
+  // Fallback: localhost in development, relative URL in production
   if (import.meta.env.DEV) {
     return `http://localhost:5000/${cleanEndpoint}`;
   }
   
-  // In production, use environment variable or relative URL
-  const baseUrl = import.meta.env.VITE_API_URL || '';
-  return baseUrl ? `${baseUrl}/${cleanEndpoint}` : `/${cleanEndpoint}`;
+  return `/${cleanEndpoint}`;
 }
 
 export default apiConfig;

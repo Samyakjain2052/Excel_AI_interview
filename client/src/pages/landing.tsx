@@ -15,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/auth-context';
+import { apiRequest } from '@/lib/queryClient';
 
 export default function Landing() {
   const { user, logout, isAuthenticated, isHR } = useAuth();
@@ -197,7 +198,7 @@ export default function Landing() {
                     size="sm"
                     onClick={async () => {
                       try {
-                        await fetch('/api/auth/init-demo', { method: 'POST' });
+                        await apiRequest('POST', '/api/auth/init-demo');
                         alert('Demo users initialized! Use hr_demo/demo123 or candidate_demo/demo123');
                       } catch (error) {
                         alert('Failed to initialize demo users');

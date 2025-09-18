@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { getApiUrl } from '@/lib/api-config';
 
 interface User {
   id: string;
@@ -33,7 +34,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const token = localStorage.getItem('auth_token');
       if (token) {
         try {
-          const response = await fetch('/api/auth/me', {
+          const response = await fetch(getApiUrl('/api/auth/me'), {
             headers: {
               'Authorization': `Bearer ${token}`
             }
