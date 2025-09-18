@@ -65,7 +65,7 @@ export default function Landing() {
               </div>
               <div>
                 <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">ExcelMaster</span>
-                <Badge variant="secondary" className="ml-2 text-xs">Pro</Badge>
+                <Badge variant="secondary" className="ml-2 text-xs">v2.0</Badge>
               </div>
             </motion.div>
             
