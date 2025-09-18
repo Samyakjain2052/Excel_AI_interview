@@ -8,11 +8,20 @@ export interface InterviewQuestion {
 
 export interface InterviewResponse {
   questionId: string;
+  question?: string;
   answer: string;
   isVoiceAnswer: boolean;
   timestamp: string;
   score?: number;
   feedback?: string;
+  category?: string;
+  difficulty?: string;
+  metrics?: {
+    technicalAccuracy: number;
+    communicationClarity: number;
+    practicalApplication: number;
+    problemSolvingApproach: number;
+  };
   evaluation?: {
     correctness: number;
     clarity: number;

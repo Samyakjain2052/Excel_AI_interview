@@ -1,0 +1,18 @@
+# Railway deployment configuration
+# This file tells Railway how to build and run your application
+
+[build]
+  command = "npm ci && npm run build"
+
+[deploy]
+  startCommand = "npm start"
+  restartPolicyType = "on-failure"
+  restartPolicyMaxRetries = 3
+
+[env]
+  NODE_ENV = "production"
+
+[healthcheck]
+  path = "/health"
+  timeout = "30s"
+  interval = "60s"

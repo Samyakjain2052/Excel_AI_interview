@@ -3,6 +3,69 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, User, CheckCircle, AlertCircle } from 'lucide-react';
 import type { ChatMessage } from '@/types/interview';
 
+// Component to render formatted AI messages with better structure
+function FormattedMessage({ content, isAI }: { content: string; isAI: boolean }) {
+  if (!isAI) {
+    return <span>{content}</span>;
+  }
+
+  // Enhanced formatting for AI messages
+  const formatContent = (text: string) => {
+    // Handle numbered lists
+    text = text.replace(/(\d+\.\s+)/g, '\n$1');
+    
+    // Handle bullet points
+    text = text.replace(/([•\-]\s+)/g, '\n$1');
+    
+    // Handle bold text markers
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Handle line breaks for better readability
+    text = text.replace(/\n\n+/g, '\n\n');
+    
+    return text;
+  };
+
+  const formattedContent = formatContent(content);
+  
+  return (
+    <div className="whitespace-pre-line">
+      {formattedContent.split('\n').map((line, index) => {
+        // Check if line is a numbered list item
+        if (/^\d+\.\s+/.test(line)) {
+          return (
+            <div key={index} className="flex items-start space-x-2 my-1">
+              <span className="font-semibold text-blue-200 min-w-6">
+                {line.match(/^(\d+\.)/)?.[1]}
+              </span>
+              <span dangerouslySetInnerHTML={{ __html: line.replace(/^\d+\.\s+/, '') }} />
+            </div>
+          );
+        }
+        
+        // Check if line is a bullet point
+        if (/^[•\-]\s+/.test(line)) {
+          return (
+            <div key={index} className="flex items-start space-x-2 my-1">
+              <span className="text-blue-200 min-w-6">•</span>
+              <span dangerouslySetInnerHTML={{ __html: line.replace(/^[•\-]\s+/, '') }} />
+            </div>
+          );
+        }
+        
+        // Regular line
+        return line.trim() ? (
+          <div key={index} className="my-1">
+            <span dangerouslySetInnerHTML={{ __html: line }} />
+          </div>
+        ) : (
+          <div key={index} className="h-2" />
+        );
+      })}
+    </div>
+  );
+}
+
 interface ChatInterfaceProps {
   messages: ChatMessage[];
   isTyping: boolean;
@@ -63,7 +126,7 @@ export function ChatInterface({ messages, isTyping }: ChatInterfaceProps) {
               </div>
               
               <div className="text-sm leading-relaxed">
-                {message.message}
+                <FormattedMessage content={message.message} isAI={message.isAI} />
               </div>
               
               {/* Score and evaluation display */}
