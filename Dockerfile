@@ -1,17 +1,19 @@
-# Ultra-simple Dockerfile
+# Fixed Dockerfile for npm optional dependencies bug
 FROM node:18
 
 WORKDIR /app
 
-# Copy and install
-COPY package*.json ./
-RUN npm install
+# Copy package.json only (not package-lock.json)
+COPY package.json ./
 
-# Copy source
+# Install dependencies fresh (this fixes the rollup platform issue)
+RUN npm install --no-package-lock
+
+# Copy source code
 COPY . .
 
-# Simple build
-RUN npm run build
+# Build backend only for Render deployment
+RUN npm run build:backend
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
