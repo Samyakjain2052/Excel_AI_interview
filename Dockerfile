@@ -1,25 +1,19 @@
-# Optimized Docker build
+# Simple single-stage build
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Install system dependencies and create directories
-RUN apk add --no-cache libc6-compat python3 make g++ && \
-    mkdir -p dist/public
+# Install system dependencies
+RUN apk add --no-cache libc6-compat
 
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies with increased memory
-RUN npm config set maxsockets 1 && \
-    npm install --production=false --silent
-
-# Copy source files
+# Copy everything first
 COPY . .
 
-# Build frontend and backend separately to avoid memory issues
-RUN npm run build:frontend
-RUN npm run build:backend
+# Install dependencies
+RUN npm install
+
+# Build application with verbose output to debug
+RUN npm run build || (echo "Build failed. Checking structure:" && ls -la && echo "Client directory:" && ls -la client/ && echo "Package.json scripts:" && cat package.json | grep -A 10 '"scripts"' && exit 1)
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
