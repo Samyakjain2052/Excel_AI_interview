@@ -1,3 +1,4 @@
+// App Version: 2025-09-18-22:20 - Latest UI with backend integration
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
