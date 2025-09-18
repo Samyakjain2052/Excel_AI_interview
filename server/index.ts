@@ -7,10 +7,21 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// CORS configuration for production
+// CORS configuration for production and development
 app.use((req, res, next) => {
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-  res.header('Access-Control-Allow-Origin', frontendUrl);
+  const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    'http://localhost:5173',  // Vite default
+    'http://localhost:3000',  // Your frontend dev server
+    'http://localhost:5000',  // Backend server (for testing)
+    'https://excel-ai-interview.vercel.app', // Vercel deployment
+  ].filter(Boolean); // Remove undefined values
+
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Credentials', 'true');
