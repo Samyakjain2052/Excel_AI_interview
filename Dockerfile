@@ -1,20 +1,25 @@
-# Single-stage Docker build for monorepo structure
+# Optimized Docker build
 FROM node:18-alpine
 
 WORKDIR /app
 
+# Install system dependencies and create directories
+RUN apk add --no-cache libc6-compat python3 make g++ && \
+    mkdir -p dist/public
+
 # Copy package files
 COPY package*.json ./
 
-# Copy all source files
+# Install dependencies with increased memory
+RUN npm config set maxsockets 1 && \
+    npm install --production=false --silent
+
+# Copy source files
 COPY . .
 
-# Install all dependencies (frontend and backend)
-RUN npm install
-
-# Build both frontend and backend
-RUN npm run build
-COPY drizzle.config.ts ./
+# Build frontend and backend separately to avoid memory issues
+RUN npm run build:frontend
+RUN npm run build:backend
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
