@@ -12,8 +12,20 @@ COPY . .
 # Install dependencies
 RUN npm install
 
-# Build application with verbose output to debug
-RUN npm run build || (echo "Build failed. Checking structure:" && ls -la && echo "Client directory:" && ls -la client/ && echo "Package.json scripts:" && cat package.json | grep -A 10 '"scripts"' && exit 1)
+# Build application step by step to identify the issue
+RUN echo "Starting build process..." && \
+    echo "Step 1: Running vite build..." && \
+    npm run build:frontend && \
+    echo "Step 2: Running esbuild for backend..." && \
+    npm run build:backend && \
+    echo "Build completed successfully!" || \
+    (echo "Build step failed. Let's debug:" && \
+     echo "Directory structure:" && ls -la && \
+     echo "Dist directory:" && ls -la dist/ 2>/dev/null || echo "No dist directory" && \
+     echo "Client directory:" && ls -la client/ && \
+     echo "Vite config exists:" && ls -la vite.config.ts && \
+     echo "Node modules:" && ls node_modules/ | head -10 && \
+     exit 1)
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
