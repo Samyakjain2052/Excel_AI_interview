@@ -1,33 +1,19 @@
-# Multi-stage Docker build for production deployment
-
-# Stage 1: Build the frontend
-FROM node:18-alpine as frontend-builder
-WORKDIR /app/client
-COPY client/package*.json ./
-RUN npm ci
-COPY client/ ./
-RUN npm run build
-
-# Stage 2: Build and setup the backend
-FROM node:18-alpine as backend-builder
-WORKDIR /app
-COPY package*.json ./
-COPY server/ ./server/
-COPY shared/ ./shared/
-RUN npm ci --production
-
-# Stage 3: Production image
+# Single-stage Docker build for monorepo structure
 FROM node:18-alpine
+
 WORKDIR /app
 
-# Copy built frontend
-COPY --from=frontend-builder /app/client/dist ./dist
-
-# Copy backend and dependencies
-COPY --from=backend-builder /app/node_modules ./node_modules
-COPY --from=backend-builder /app/server ./server
-COPY --from=backend-builder /app/shared ./shared
+# Copy package files
 COPY package*.json ./
+
+# Copy all source files
+COPY . .
+
+# Install all dependencies (frontend and backend)
+RUN npm install
+
+# Build both frontend and backend
+RUN npm run build
 COPY drizzle.config.ts ./
 
 # Create non-root user
